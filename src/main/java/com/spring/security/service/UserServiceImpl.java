@@ -27,9 +27,5 @@ public class UserServiceImpl implements UserServices {
         return null;
     }
 
-    @Override
-    public Optional<User> findByUserName(String email) {
-        System.out.println(email);
-        return userRepositery.findByUserName(email);
-    }
+
 }

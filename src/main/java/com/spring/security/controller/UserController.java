@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("v1/api")
+@CrossOrigin("*")
 public class UserController {
 
     @Autowired
@@ -18,11 +19,11 @@ public class UserController {
 
     @PostMapping("create")
     public ResponseEntity<User> createUser(@RequestBody User user){
-        Optional<User>  isExist = userService.findByUserName(user.getUsername());
-        if(isExist.isPresent()){
-            System.out.println("User Already Exist");
-            return null;
-        }
+//        Optional<User>  isExist = userService.findByUserName(user.getUsername());
+//        if(isExist.isPresent()){
+//            System.out.println("User Already Exist");
+//            return null;
+//        }
         User newUser = userService.createUser(user);
         return  new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
