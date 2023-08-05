@@ -11,5 +11,6 @@ public interface UserServices {
     public List<User> getAllUser();
 
     public User getUser(Long id);
-
+    public User checkLogin(User user);
     }
+
