@@ -1,6 +1,7 @@
 package com.spring.security.service;
 
 import com.spring.security.user.entity.User;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,11 @@ public interface UserServices {
     public List<User> getAllUser();
 
     public User getUser(Long id);
-    public User checkLogin(User user);
-    }
+
+    boolean isExistsByEmail(String email);
+
+    boolean existsByEmail(String email);
+
+    boolean isPasswordMatch(String email, String password);
+}
 

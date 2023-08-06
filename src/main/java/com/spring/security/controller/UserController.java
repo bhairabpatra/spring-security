@@ -1,5 +1,6 @@
 package com.spring.security.controller;
 
+import com.spring.security.exception.NoUserFound;
 import com.spring.security.service.UserServices;
 import com.spring.security.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,30 @@ public class UserController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @PostMapping("create")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) throws NoUserFound {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User newUser = userService.createUser(user);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        if (userService.existsByEmail(user.getEmail())) {
+            throw new NoUserFound(user.getEmail() + " Email already found");
+        } else {
+            User newUser = userService.createUser(user);
+            throw new NoUserFound(" user registered successfully ");
+        }
     }
 
     @PostMapping("login")
-    public ResponseEntity<User> login(@RequestBody User user){
-        User newUser = userService.checkLogin(user);
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    public ResponseEntity<?> login(@RequestBody User user) throws NoUserFound {
+        if (userService.isExistsByEmail(user.getEmail())) {
+            throw new NoUserFound(user.getEmail() + " Email Not found");
+        }
+        if (userService.isPasswordMatch(user.getEmail(), user.getPassword())) {
+            throw new NoUserFound("Password Not Match");
+        } else {
+            throw new NoUserFound("You are successfully logged in");
+        }
     }
+
     @GetMapping("allUser")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUser();
@@ -50,6 +63,4 @@ public class UserController {
         String details = "Hai iam profile page";
         return details;
     }
-
-
 }

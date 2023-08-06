@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserServices {
 
     @Override
     public User createUser(User user) {
-        return userRepositery.save(user);
+            return userRepositery.save(user);
     }
 
     @Override
@@ -30,35 +30,35 @@ public class UserServiceImpl implements UserServices {
     public User getUser(Long id) {
         return null;
     }
-
     @Override
-    public User checkLogin(User user) {
-        User isUserExist = userRepositery.findByUsername(user.getUsername());
-        if (isUserExist != null) {
-            String password = user.getPassword();
-            String encodePassword = isUserExist.getPassword();
-            Boolean isPasswordMatch = passwordEncoder.matches(password, encodePassword);
-            if (isPasswordMatch) {
-                User isUser = userRepositery.findByUsernameAndPassword(user.getUsername(), user.getPassword());
-                System.out.println(isUser);
-                if (isUser != null) {
-                    System.out.println("Login SuccessFully Done !");
-                } else {
-                    System.out.println("Login Failed!");
-                }
-            } else {
-                System.out.println("Password Not Match");
-            }
-
-        } else {
-            System.out.println(user.getUsername() + "Not exist");
+    public boolean isExistsByEmail(String email) {
+        User isEmailExist = userRepositery.findByEmail(email);
+        if(isEmailExist != null){
+            return false;
+        }else {
+            return  true;
         }
-
-
-        return null;
     }
 
+    @Override
+    public boolean existsByEmail(String email) {
+        User isEmailExist = userRepositery.findByEmail(email);
+        if(isEmailExist != null){
+            return true;
+        }else {
+            return  false;
+        }
+    }
 
+    @Override
+    public boolean isPasswordMatch(String email , String password) {
+        User existUser = userRepositery.findByEmail(email);
+        boolean isPasswordMatch = passwordEncoder.matches(password, existUser.getPassword());
+        if(isPasswordMatch){
+            return false;
+        }else {
+            return  true;
+        }
+    }
 }
 
-//https://springjavatutorial.medium.com/login-and-registration-rest-api-with-spring-security-d7ee48820bd0

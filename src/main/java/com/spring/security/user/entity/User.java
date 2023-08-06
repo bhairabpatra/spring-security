@@ -1,4 +1,5 @@
 package com.spring.security.user.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,9 +8,10 @@ import lombok.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
-    private  String username;
-    private  String password;
+    private Long id;
+    private String email;
+    private String username;
+    private String password;
 
     public Long getId() {
         return id;
@@ -35,9 +37,18 @@ public class User {
         this.password = password;
     }
 
-    public User(Long id, String username, String password) {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public User(Long id, String username, String email, String password) {
         this.id = id;
         this.username = username;
+        this.email = email;
         this.password = password;
     }
 
