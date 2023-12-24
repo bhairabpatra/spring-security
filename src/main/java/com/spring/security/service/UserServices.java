@@ -18,5 +18,7 @@ public interface UserServices {
     boolean existsByEmail(String email);
 
     boolean isPasswordMatch(String email, String password);
+
+    boolean deleteUser(Long id);
 }
 

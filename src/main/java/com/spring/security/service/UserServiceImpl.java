@@ -18,7 +18,8 @@ public class UserServiceImpl implements UserServices {
 
     @Override
     public User createUser(User user) {
-            return userRepositery.save(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepositery.save(user);
     }
 
     @Override
@@ -26,39 +27,52 @@ public class UserServiceImpl implements UserServices {
         return userRepositery.findAll();
     }
 
-    @Override
-    public User getUser(Long id) {
-        return null;
-    }
+
     @Override
     public boolean isExistsByEmail(String email) {
         User isEmailExist = userRepositery.findByEmail(email);
-        if(isEmailExist != null){
+        if (isEmailExist != null) {
             return false;
-        }else {
-            return  true;
+        } else {
+            return true;
         }
     }
 
     @Override
     public boolean existsByEmail(String email) {
         User isEmailExist = userRepositery.findByEmail(email);
-        if(isEmailExist != null){
+        if (isEmailExist != null) {
             return true;
-        }else {
-            return  false;
+        } else {
+            return false;
         }
     }
 
     @Override
-    public boolean isPasswordMatch(String email , String password) {
+    public boolean isPasswordMatch(String email, String password) {
         User existUser = userRepositery.findByEmail(email);
         boolean isPasswordMatch = passwordEncoder.matches(password, existUser.getPassword());
-        if(isPasswordMatch){
+        if (isPasswordMatch) {
             return false;
-        }else {
-            return  true;
+        } else {
+            return true;
         }
+    }
+
+    @Override
+    public boolean deleteUser(Long id) {
+        Optional<User> user = userRepositery.findById(id);
+        if (user.isPresent()) {
+            userRepositery.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public User getUser(Long id) {
+        Optional<User> user = userRepositery.findById(id);
+        return user.orElse(null);
     }
 }
 
