@@ -1,7 +1,6 @@
 package com.spring.security.controller;
 
-import com.spring.security.config.CustomUserDetails;
-import com.spring.security.config.JwtService;
+import com.spring.security.config.jwtservice.JwtService;
 import com.spring.security.exception.NoUserFound;
 import com.spring.security.service.UserServices;
 import com.spring.security.user.entity.JwtAuthenticationResponse;
@@ -9,15 +8,13 @@ import com.spring.security.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -50,41 +47,37 @@ public class UserController {
 
     @PostMapping("signin")
     public ResponseEntity<?> login(@RequestBody User user) throws NoUserFound {
-        System.out.println("Entering in sign in Method...");
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-//        if (userService.existsByEmail(user.getEmail())) {
-//            throw new NoUserFound(user.getEmail() + " Email Not found");
-//        }
 
-        if(authentication.isAuthenticated()){
-            System.out.println("Entering in isAuthenticated");
-            var jwt = jwtService.generateToken(user.getUsername());
+        if (userService.findByUsername(user.getUsername())) {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+            if(authentication.isAuthenticated()){
+                var jwt = jwtService.generateToken(user.getUsername());
 //            var refreshToken = jwtService.generateRefreshToken((new HashMap<>()), user);
-            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-            jwtAuthenticationResponse.setMessage("Login successfully done");
-            jwtAuthenticationResponse.setStatus(HttpStatus.OK.value());
-            jwtAuthenticationResponse.setToken(jwt);
+                JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+                jwtAuthenticationResponse.setMessage("Login successfully done");
+                jwtAuthenticationResponse.setStatus(HttpStatus.OK.value());
+                jwtAuthenticationResponse.setToken(jwt);
 //            jwtAuthenticationResponse.setRefreshToken(refreshToken);
-            return new ResponseEntity<>(jwtAuthenticationResponse, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("invalid user request..!!", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(jwtAuthenticationResponse, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("invalid user request..!!", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }else {
+            throw new NoUserFound("User " + user.getUsername() + "  Not found");
         }
 
-//        if (userService.isPasswordMatch(user.getEmail(), user.getPassword())) {
-//            throw new NoUserFound("Password Not Match");
-//        } else {
-//            throw new NoUserFound("You are successfully logged in");
-//        }
+
     }
 
     @GetMapping("allUser")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUser();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
-
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         if (userService.deleteUser(id)) {
             return new ResponseEntity<>("User deleted successfully", HttpStatus.OK);
@@ -95,6 +88,7 @@ public class UserController {
 
 
     @GetMapping("/get-user/{id}")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         User user = userService.getUser(id);
         if (user != null) {

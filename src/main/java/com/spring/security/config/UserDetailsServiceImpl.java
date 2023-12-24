@@ -10,26 +10,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Component
-public class UserDetailsServiceImpl  implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserRepositery userRepositery;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Entering in loadUserByUsername Method...");
-        User user = userRepositery.findByUsername(username);
-        try {
-            if(user != null){
-                return new CustomUserDetails(user);
-            }
-
-        }catch (UsernameNotFoundException e){
-            throw new UsernameNotFoundException("could not found user..!!" + e.getMessage());
+        Optional<User> user = userRepositery.findByUsername(username);
+        if (user.isPresent()) {
+            return new CustomUserDetails(user.get());
+        } else {
+            throw new UsernameNotFoundException(username + "User name not found!");
         }
-        return  null;
-
     }
 }

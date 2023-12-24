@@ -1,4 +1,4 @@
-package com.spring.security.config;
+package com.spring.security.config.jwtservice;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

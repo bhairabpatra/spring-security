@@ -20,5 +20,7 @@ public interface UserServices {
     boolean isPasswordMatch(String email, String password);
 
     boolean deleteUser(Long id);
+
+    boolean findByUsername(String username);
 }
 

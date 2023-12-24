@@ -70,6 +70,14 @@ public class UserServiceImpl implements UserServices {
     }
 
     @Override
+    public boolean findByUsername(String username) {
+        Optional<User> user = userRepositery.findByUsername(username);
+        if(user.isPresent()){
+            return true;
+        }else {return false;}
+    }
+
+    @Override
     public User getUser(Long id) {
         Optional<User> user = userRepositery.findById(id);
         return user.orElse(null);
