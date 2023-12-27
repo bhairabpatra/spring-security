@@ -4,17 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.security.PrivateKey;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-@Table(name = "user_tbl")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +24,12 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name="fk_user_id", referencedColumnName = "id")
+    private List<CreditCard> cards = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-//    @JoinTable(name = "user_roles",
-//            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-//            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
-//    )
     private Set<Role> roles = new HashSet<>();
+
+
 }

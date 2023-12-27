@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 
     @Autowired
@@ -36,7 +36,9 @@ public class UserController {
     }
 
     @PostMapping("create")
+    @CrossOrigin(origins = "http://localhost:4200")
     public ResponseEntity<User> createUser(@RequestBody User user) throws NoUserFound {
+
         if (userService.existsByEmail(user.getEmail())) {
             throw new NoUserFound(user.getEmail() + " Email already exist");
         } else {
@@ -50,7 +52,7 @@ public class UserController {
 
         if (userService.findByUsername(user.getUsername())) {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-            if(authentication.isAuthenticated()){
+            if (authentication.isAuthenticated()) {
                 var jwt = jwtService.generateToken(user.getUsername());
 //            var refreshToken = jwtService.generateRefreshToken((new HashMap<>()), user);
                 JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
@@ -62,15 +64,15 @@ public class UserController {
             } else {
                 return new ResponseEntity<>("invalid user request..!!", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        }else {
-            throw new NoUserFound("User " + user.getUsername() + "  Not found");
+        } else {
+            return new ResponseEntity<>("User" + user.getUsername() + "Not found", HttpStatus.NOT_FOUND);
         }
 
 
     }
 
     @GetMapping("allUser")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = userService.getAllUser();
         return new ResponseEntity<>(users, HttpStatus.OK);

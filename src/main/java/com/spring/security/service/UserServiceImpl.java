@@ -1,6 +1,8 @@
 package com.spring.security.service;
 
+import com.spring.security.repositery.CreditCardRepositery;
 import com.spring.security.repositery.UserRepositery;
+import com.spring.security.user.entity.CreditCard;
 import com.spring.security.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,8 @@ import java.util.Optional;
 public class UserServiceImpl implements UserServices {
     @Autowired
     private UserRepositery userRepositery;
+    @Autowired
+    private CreditCardRepositery creditCardRepositery;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
